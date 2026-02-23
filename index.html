@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>For Mime 🌙</title>
+
+<style>
+body{
+  margin:0;
+  background:#0b0b0f;
+  color:#e6e6eb;
+  font-family: "Courier New", monospace;
+  text-align:center;
+  overflow:hidden;
+}
+
+#screen{
+  margin-top:120px;
+  padding:20px;
+}
+
+h1{
+  font-weight:normal;
+  letter-spacing:1px;
+}
+
+button{
+  padding:14px 28px;
+  font-size:20px;
+  margin:15px;
+  border-radius:10px;
+  border:1px solid #444;
+  background:#111;
+  color:white;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+button:hover{
+  background:#1a1a1f;
+}
+
+canvas{
+  position:fixed;
+  top:0;
+  left:0;
+  pointer-events:none;
+}
+</style>
+</head>
+
+<body>
+
+<div id="screen">
+<h1 id="typing"></h1>
+</div>
+
+<audio id="song">
+<source src="https://files.catbox.moe/0l9n6u.mp3" type="audio/mpeg">
+</audio>
+
+<canvas id="confetti"></canvas>
+
+<script>
+
+/* ---------- TYPEWRITER EFFECT ---------- */
+function typeText(text, speed=40, callback=null){
+  const el=document.getElementById("typing");
+  el.innerHTML="";
+  let i=0;
+  function typing(){
+    if(i<text.length){
+      el.innerHTML+=text.charAt(i);
+      i++;
+      setTimeout(typing,speed);
+    }else if(callback){
+      callback();
+    }
+  }
+  typing();
+}
+
+/* ---------- LOADING SEQUENCE ---------- */
+const loadingMessages=[
+"Initializing birthday system...",
+"Scanning personality...",
+"Checking heights...",
+"Analyzing shortness levels...",
+"Preparing surprise..."
+];
+
+let step=0;
+
+function loadingSequence(){
+  if(step<loadingMessages.length){
+    typeText(loadingMessages[step],35,()=>{
+      step++;
+      setTimeout(loadingSequence,900);
+    });
+  }else{
+    showQuestion();
+  }
+}
+
+loadingSequence();
+
+/* ---------- QUESTION ---------- */
+let yesSize=20;
+let noClicks=0;
+
+function showQuestion(){
+  document.getElementById("screen").innerHTML=
+  `<h1 id="typing"></h1>`;
+
+  typeText("Mime… are u a shorty? 🌙",45,()=>{
+    document.getElementById("screen").innerHTML+=`
+      <div>
+        <button id="yes" onclick="yesClicked()">Yes</button>
+        <button id="no" onclick="noClicked()">No</button>
+      </div>`;
+  });
+}
+
+function noClicked(){
+  noClicks++;
+
+  yesSize+=14;
+  document.getElementById("yes").style.fontSize=
+  yesSize+"px";
+
+  const noBtn=document.getElementById("no");
+  noBtn.style.position="absolute";
+  noBtn.style.left=
+  Math.random()*(window.innerWidth-120)+"px";
+  noBtn.style.top=
+  Math.random()*(window.innerHeight-60)+"px";
+
+  if(noClicks>=6){
+    noBtn.remove();
+  }
+}
+
+/* ---------- SURPRISE ---------- */
+function yesClicked(){
+
+  document.getElementById("song").play();
+
+  document.getElementById("screen").innerHTML=
+  `<h1 id="typing"></h1>`;
+
+  typeText("Happy 18 Birthday, Mime 🎂",60,()=>{
+    setTimeout(()=>{
+      typeText(
+      "hellllooo pretty girlll it's the one and only yahya happy birthday to the prettiest most gorgeous girl in the world i wish u the happiest year and i wish it's full of success, im here to give u something lil of how much u gave me and how much u helped me and idc if no one celebrated ur birthday I'll do and im making sure that yk that im proud of you and ur parents and ur family and everyone cuz ur a strong smart pretty girl and we all wish u best and we all love youuuu Last but not least Yahya Love.💕 Out💟",
+      35,
+      startConfetti
+      );
+    },1200);
+  });
+}
+
+/* ---------- CONFETTI ---------- */
+const canvas=document.getElementById("confetti");
+const ctx=canvas.getContext("2d");
+
+canvas.width=window.innerWidth;
+canvas.height=window.innerHeight;
+
+let pieces=[];
+
+function startConfetti(){
+  for(let i=0;i<160;i++){
+    pieces.push({
+      x:Math.random()*canvas.width,
+      y:Math.random()*canvas.height-canvas.height,
+      size:Math.random()*6+3,
+      speed:Math.random()*3+1,
+      angle:Math.random()*360
+    });
+  }
+  requestAnimationFrame(updateConfetti);
+}
+
+function updateConfetti(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  pieces.forEach(p=>{
+    p.y+=p.speed;
+    p.angle+=4;
+
+    ctx.save();
+    ctx.translate(p.x,p.y);
+    ctx.rotate(p.angle*Math.PI/180);
+    ctx.fillStyle=`hsl(${Math.random()*360},70%,70%)`;
+    ctx.fillRect(-p.size/2,-p.size/2,p.size,p.size);
+    ctx.restore();
+
+    if(p.y>canvas.height) p.y=-10;
+  });
+
+  requestAnimationFrame(updateConfetti);
+}
+</script>
+
+</body>
+</html>
